@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { Boxes, LogIn, UserPlus } from "lucide-react";
 import { cadastrar, entrar } from "@estoque/backend/sessao";
+import { Alerta } from "@/components/ui/alerta";
+import { Botao } from "@/components/ui/botao";
+import { Campo } from "@/components/ui/campo";
+import { Cartao } from "@/components/ui/cartao";
 
 type Modo = "entrar" | "cadastrar";
 
-const CAMPO = "mt-1 block w-full border px-3 py-3";
-
-// Tela de login provisória, sem acabamento visual. A versão final é a tarefa
-// T2.1 (docs/03-specifications/etapa-2-acesso.md).
+// Tela de login provisória, já usando a base visual. A versão final é a
+// tarefa T2.1 (docs/03-specifications/etapa-2-acesso.md).
 export default function LoginPage() {
   const [modo, setModo] = useState<Modo>("entrar");
   const [nome, setNome] = useState("");
@@ -62,65 +65,74 @@ export default function LoginPage() {
   const titulo = modo === "entrar" ? "Entrar" : "Criar conta";
 
   return (
-    <main className="mx-auto max-w-md p-4">
-      <h1 className="text-xl font-bold">Estoque 3G</h1>
-      <h2 className="mt-4 text-lg">{titulo}</h2>
+    <main className="flex min-h-dvh items-center justify-center bg-slate-100 px-4 py-10">
+      <div className="w-full max-w-sm">
+        <div className="mb-6 text-center">
+          <span className="mx-auto mb-3 grid size-12 place-items-center rounded-xl bg-marca-600 text-white">
+            <Boxes className="size-6" aria-hidden />
+          </span>
+          <h1 className="text-2xl font-bold text-slate-900">Estoque 3G</h1>
+          <p className="mt-1 text-sm text-slate-500">Catalogação e endereçamento de estoque</p>
+        </div>
 
-      <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-        {modo === "cadastrar" && (
-          <label className="block">
-            Nome completo
-            <input
-              type="text"
+        <Cartao>
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">{titulo}</h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {modo === "cadastrar" && (
+              <Campo
+                rotulo="Nome completo"
+                type="text"
+                required
+                autoComplete="name"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+            )}
+
+            <Campo
+              rotulo="E-mail"
+              type="email"
               required
-              autoComplete="name"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-              className={CAMPO}
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          </label>
-        )}
 
-        <label className="block">
-          E-mail
-          <input
-            type="email"
-            required
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={CAMPO}
-          />
-        </label>
+            <Campo
+              rotulo="Senha"
+              type="password"
+              required
+              minLength={6}
+              dica={modo === "cadastrar" ? "Ao menos 6 caracteres." : undefined}
+              autoComplete={modo === "entrar" ? "current-password" : "new-password"}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
 
-        <label className="block">
-          Senha
-          <input
-            type="password"
-            required
-            minLength={6}
-            autoComplete={modo === "entrar" ? "current-password" : "new-password"}
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            className={CAMPO}
-          />
-        </label>
+            {erro && <Alerta tom="erro">{erro}</Alerta>}
+            {aviso && <Alerta tom="sucesso">{aviso}</Alerta>}
 
-        {erro && <p role="alert" className="text-red-700">{erro}</p>}
-        {aviso && <p role="status" className="text-green-700">{aviso}</p>}
+            <Botao
+              type="submit"
+              carregando={isEnviando}
+              icone={modo === "entrar" ? LogIn : UserPlus}
+              className="w-full"
+            >
+              {isEnviando ? "Aguarde..." : titulo}
+            </Botao>
+          </form>
+        </Cartao>
 
-        <button type="submit" disabled={isEnviando} className="w-full border px-4 py-3 font-bold">
-          {isEnviando ? "Aguarde..." : titulo}
-        </button>
-      </form>
-
-      <button
-        type="button"
-        onClick={() => trocarModo(modo === "entrar" ? "cadastrar" : "entrar")}
-        className="mt-4 py-3 underline"
-      >
-        {modo === "entrar" ? "Não tenho conta: criar uma" : "Já tenho conta: entrar"}
-      </button>
+        <Botao
+          type="button"
+          variante="fantasma"
+          className="mt-3 w-full"
+          onClick={() => trocarModo(modo === "entrar" ? "cadastrar" : "entrar")}
+        >
+          {modo === "entrar" ? "Não tenho conta: criar uma" : "Já tenho conta: entrar"}
+        </Botao>
+      </div>
     </main>
   );
 }
