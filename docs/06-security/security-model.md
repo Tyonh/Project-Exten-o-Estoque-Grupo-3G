@@ -43,6 +43,8 @@ As permissões estão concentradas em três funções de `backend/src/cargos.ts`
 - A sessão fica em cookie e é validada no servidor a cada chamada.
 - Todo cadastro novo recebe perfil `pendente`, criado pelo backend.
 - O autor de uma movimentação é sempre o usuário da sessão. Nenhuma tela envia "quem fez".
+- Recuperação de senha por e-mail: o link temporário volta para `frontend/app/api/auth/confirmar-recuperacao`, que abre uma sessão só para a troca. A tela de nova senha encerra as sessões abertas ao salvar.
+- O pedido de recuperação responde sempre de forma neutra, para não revelar quais e-mails estão cadastrados.
 
 ## Segredos
 

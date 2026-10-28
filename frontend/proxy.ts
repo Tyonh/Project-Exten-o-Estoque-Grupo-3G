@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Páginas acessíveis sem sessão ativa.
-const ROTAS_PUBLICAS = ["/login"];
+const ROTAS_PUBLICAS = ["/login", "/recuperar-senha"];
 
 function isRotaPublica(pathname: string): boolean {
   return ROTAS_PUBLICAS.some(

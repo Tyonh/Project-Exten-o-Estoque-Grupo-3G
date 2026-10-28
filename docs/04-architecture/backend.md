@@ -17,7 +17,7 @@ Banco PostgreSQL (Supabase)
 ```
 
 - **O navegador nunca fala com o banco.** Toda leitura e toda gravação passam por uma função do backend.
-- **O login é do Supabase.** A sessão fica em cookie e é validada no servidor a cada chamada.
+- **O login é do Supabase.** A sessão fica em cookie e é validada no servidor a cada chamada. A recuperação de senha também: o link do e-mail volta para uma rota de `app/api/`, que troca o código por sessão.
 - **O servidor acessa o banco com a chave secreta do Supabase** (`SUPABASE_SECRET_KEY`), que só existe no servidor. Ela ignora a segurança por linha, e é por isso que só o backend a usa ([[decisions#ADR-16 Backend acessa o banco pela chave secreta|ADR-16]]).
 - **O banco é simples de propósito**: guarda os dados e recusa valores inválidos. Quem decide se uma operação pode acontecer é o backend.
 
@@ -30,7 +30,7 @@ Banco PostgreSQL (Supabase)
 | `backend/src/resultado.ts` | O formato de resposta das funções | Telas e backend |
 | `backend/src/cargos.ts` | Os perfis e os grupos de permissão | Telas e backend |
 | `frontend/proxy.ts` | Proteção de rotas: sem sessão, volta para o login | Next.js |
-| `frontend/app/api/` | Rotas chamadas por outros sistemas, como o recebimento de documentos de saída | Sistemas externos |
+| `frontend/app/api/` | Rotas chamadas por outros sistemas, como o recebimento de documentos de saída, e a confirmação do link de recuperação de senha | Sistemas externos e o Supabase |
 
 Uma tela nunca importa nada de `backend/src/servidor/` nem o cliente do banco.
 

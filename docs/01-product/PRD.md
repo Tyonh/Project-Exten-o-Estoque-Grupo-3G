@@ -8,6 +8,7 @@ Cada requisito tem um código. As tarefas das [[roteiro|etapas]] apontam para es
 - **RF-01** Como usuário, quero entrar com e-mail e senha.
 - **RF-02** Como novo usuário, fico com perfil "pendente" e sem acesso aos dados até ser liberado.
 - **RF-03** Como administrador, quero definir o perfil de cada usuário.
+- **RF-28** Como usuário, quero recuperar minha senha por e-mail quando esquecê-la.
 
 ### Catálogo
 - **RF-04** Como gerente de estoque, quero cadastrar [[glossario#Categoria|categorias]] com a lista de atributos que elas usam e um estoque mínimo padrão.
