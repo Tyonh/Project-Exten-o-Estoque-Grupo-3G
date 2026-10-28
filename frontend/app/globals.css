@@ -1,1 +1,65 @@
 @import "tailwindcss";
+
+@theme {
+  /* Tipografia — referência: Shopify Editions Winter '26.
+     Títulos: família display, peso bold, entrelinha curta e tracking
+     negativo. Corpo: família sans (Inter). */
+  --font-sans: var(--fonte-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--fonte-display), ui-sans-serif, system-ui, sans-serif;
+
+  --text-display-1: clamp(2.25rem, 1.75rem + 2.2vw, 3.5rem);
+  --text-display-1--line-height: 0.95;
+  --text-display-1--letter-spacing: -0.03em;
+  --text-display-1--font-weight: 700;
+
+  --text-display-2: clamp(1.75rem, 1.45rem + 1.2vw, 2.5rem);
+  --text-display-2--line-height: 1;
+  --text-display-2--letter-spacing: -0.02em;
+  --text-display-2--font-weight: 700;
+
+  --text-display-3: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
+  --text-display-3--line-height: 1.1;
+  --text-display-3--letter-spacing: -0.015em;
+  --text-display-3--font-weight: 600;
+
+  /* Etiqueta pequena, maiúscula e espaçada (eyebrow). */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.08em;
+  --text-eyebrow--font-weight: 600;
+
+  /* Azul da marca: botões, links e destaques. */
+  --color-marca-50: #eff6ff;
+  --color-marca-100: #dbeafe;
+  --color-marca-200: #bfdbfe;
+  --color-marca-300: #93c5fd;
+  --color-marca-400: #60a5fa;
+  --color-marca-500: #3b82f6;
+  --color-marca-600: #2563eb;
+  --color-marca-700: #1d4ed8;
+  --color-marca-800: #1e40af;
+  --color-marca-900: #1e3a8a;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-100 text-[#303030] antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-marca-600);
+    outline-offset: 2px;
+  }
+}
