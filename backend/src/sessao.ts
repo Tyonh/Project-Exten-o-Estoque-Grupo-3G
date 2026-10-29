@@ -1,11 +1,10 @@
 "use server";
 
 import { headers } from "next/headers";
-import { eCargo } from "./cargos";
 import { falha, sucesso, type Resultado } from "./resultado";
-import { banco } from "./servidor/banco";
 import { criarClienteDeSessao } from "./servidor/supabase";
-import type { DadosDeCadastro, Perfil } from "./tipos";
+import { lerPerfilDaSessao } from "./servidor/perfil";
+import type { Perfil } from "./tipos";
 
 // O Supabase devolve os erros em inglês. As mensagens que o usuário vê ficam
 // aqui, em português, escolhidas pelo código do erro.
@@ -35,39 +34,9 @@ export async function entrar(email: string, senha: string): Promise<Resultado<nu
   return sucesso(null);
 }
 
-// Cria o usuário no login do Supabase e, em seguida, o perfil com cargo
-// "pendente". O perfil só é criado pelo backend: o banco não tem gatilho.
-export async function cadastrar(dados: DadosDeCadastro): Promise<Resultado<null>> {
-  const nome = dados.nome.trim();
-  if (nome === "") {
-    return falha("Informe seu nome completo.");
-  }
-
-  const supabase = await criarClienteDeSessao();
-  const { data, error } = await supabase.auth.signUp({
-    email: dados.email,
-    password: dados.senha,
-    options: { data: { nome } },
-  });
-  if (error) {
-    return falha(traduzirErro(error, "Não foi possível criar a conta. Tente novamente."));
-  }
-  if (!data.user) {
-    return falha("Não foi possível criar a conta. Tente novamente.");
-  }
-
-  const { error: erroPerfil } = await banco()
-    .from("perfis")
-    .upsert(
-      { id: data.user.id, nome, email: dados.email, cargo: "pendente" },
-      { onConflict: "id", ignoreDuplicates: true },
-    );
-  if (erroPerfil) {
-    console.error("[sessao] Falha ao criar o perfil:", erroPerfil.message);
-    return falha("A conta foi criada, mas o perfil não. Fale com o administrador.");
-  }
-  return sucesso(null);
-}
+// O cadastro de novos acessos é feito pelo administrador em
+// `backend/src/usuarios.ts`. Não existe cadastro público: a tela de login só
+// entra em contas já criadas.
 
 export async function sair(): Promise<Resultado<null>> {
   const supabase = await criarClienteDeSessao();
@@ -149,7 +118,10 @@ export async function alterarSenha(novaSenha: string): Promise<Resultado<null>> 
     return falha("Sua sessão expirou. Peça um novo link de recuperação.");
   }
 
-  const { error } = await supabase.auth.updateUser({ password: novaSenha });
+  const { error } = await supabase.auth.updateUser({
+    password: novaSenha,
+    data: { senha_provisoria: false },
+  });
   if (error) {
     return falha(traduzirErro(error, "Não foi possível alterar a senha. Tente novamente."));
   }
@@ -165,28 +137,64 @@ export async function alterarSenha(novaSenha: string): Promise<Resultado<null>> 
   return sucesso(null);
 }
 
-// Perfil do usuário da sessão. Devolve `dados: null` quando não há sessão.
-// O usuário vem do cookie validado pelo Supabase, nunca de um dado da tela.
-export async function buscarPerfilAtual(): Promise<Resultado<Perfil | null>> {
+// Troca a senha de uma conta já autenticada. A senha atual é conferida antes
+// para que alguém com a sessão aberta não troque a senha sem conhecer a antiga.
+// Depois da troca, as outras sessões da pessoa são encerradas.
+export async function alterarSenhaDaConta(
+  senhaAtual: string,
+  novaSenha: string,
+): Promise<Resultado<null>> {
+  if (!senhaAtual) return falha("Informe a senha atual.");
+  if (novaSenha.length < 6) {
+    return falha("A nova senha precisa ter ao menos 6 caracteres.");
+  }
+  if (senhaAtual === novaSenha) {
+    return falha("A nova senha precisa ser diferente da senha atual.");
+  }
+
   const supabase = await criarClienteDeSessao();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) {
-    return sucesso(null);
+  if (!user?.email) {
+    return falha("Sua sessão expirou. Entre de novo.");
   }
 
-  const { data: perfil, error } = await banco()
-    .from("perfis")
-    .select("id, nome, email, cargo")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { error: erroDaSenhaAtual } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: senhaAtual,
+  });
+  if (erroDaSenhaAtual) {
+    if (erroDaSenhaAtual.code === "invalid_credentials") {
+      return falha("Senha atual incorreta.");
+    }
+    return falha(
+      traduzirErro(erroDaSenhaAtual, "Não foi possível confirmar a senha atual."),
+    );
+  }
+
+  const { error } = await supabase.auth.updateUser({
+    password: novaSenha,
+    data: { senha_provisoria: false },
+  });
   if (error) {
-    console.error("[sessao] Falha ao buscar o perfil:", error.message);
-    return falha("Não foi possível carregar seu perfil.");
+    return falha(traduzirErro(error, "Não foi possível alterar a senha. Tente novamente."));
   }
-  if (!perfil || !eCargo(perfil.cargo)) {
-    return falha("Seu perfil não foi encontrado. Fale com o administrador.");
+
+  const { error: erroAoEncerrar } = await supabase.auth.signOut({ scope: "others" });
+  if (erroAoEncerrar) {
+    console.error(
+      "[sessao] Senha alterada, mas as outras sessões não foram encerradas:",
+      erroAoEncerrar.message,
+    );
   }
-  return sucesso({ id: perfil.id, nome: perfil.nome, email: perfil.email, cargo: perfil.cargo });
+
+  return sucesso(null);
+}
+
+// Perfil do usuário da sessão. Devolve `dados: null` quando não há sessão.
+// A leitura fica em `servidor/perfil.ts` para ser usada também na conferência
+// de permissão das outras funções do backend.
+export async function buscarPerfilAtual(): Promise<Resultado<Perfil | null>> {
+  return lerPerfilDaSessao();
 }
