@@ -50,14 +50,14 @@ Uma mudança que atravessa a fronteira (o banco muda um nome do contrato, a tela
 | Etapa | Entrega | Situação |
 |---|---|---|
 | [[etapa-0-preparacao\|Etapa 0 — Preparação]] | Deixar todo mundo com o projeto rodando no próprio computador, no mesmo repositório e no mesmo banco de desenvolvimento. | Em execução |
-| [[etapa-1-banco\|Etapa 1 — Banco de dados]] | Criar toda a estrutura do banco a partir da especificação em `banco-de-dados`. | A fazer |
-| [[etapa-2-acesso\|Etapa 2 — Acesso]] | Login, perfis e liberação de usuários. | A fazer |
-| [[etapa-3-catalogo\|Etapa 3 — Catálogo]] | Cadastro de categorias, famílias e variantes. | A fazer |
-| [[etapa-4-locais\|Etapa 4 — Locais]] | Cadastro da árvore de endereços. | A fazer |
-| [[etapa-5-movimentacoes\|Etapa 5 — Movimentações]] | Registrar entrada, saída e transferência, e mostrar o histórico. | A fazer |
-| [[etapa-6-consulta\|Etapa 6 — Consulta]] | Responder rápido, no celular, "onde está?" e "o que há aqui?". | A fazer |
+| [[etapa-1-banco\|Etapa 1 — Banco de dados]] | Criar toda a estrutura do banco a partir da especificação em `banco-de-dados`. | Em execução |
+| [[etapa-2-acesso\|Etapa 2 — Acesso]] | Login, perfis e liberação de usuários. | Em execução |
+| [[etapa-3-catalogo\|Etapa 3 — Catálogo]] | Cadastro de categorias, famílias e variantes. | Em execução |
+| [[etapa-4-locais\|Etapa 4 — Locais]] | Cadastro da árvore de endereços. | Em execução |
+| [[etapa-5-movimentacoes\|Etapa 5 — Movimentações]] | Registrar entrada, saída e transferência, e mostrar o histórico. | Em execução |
+| [[etapa-6-consulta\|Etapa 6 — Consulta]] | Responder rápido, no celular, "onde está?" e "o que há aqui?". | Em execução |
 | [[etapa-7-inventario\|Etapa 7 — Inventário]] | Contar um local e corrigir as diferenças com registro. | A fazer |
-| [[etapa-8-documentos\|Etapa 8 — Documentos de saída]] | Receber pedidos de outro sistema e dar baixa por QR code. | A fazer |
+| [[etapa-8-documentos\|Etapa 8 — Documentos de saída]] | Receber pedidos de outro sistema e dar baixa por QR code. | Em execução (código pronto; falta validar com banco real, ver [[plano-de-testes]]) |
 | [[etapa-9-importacao\|Etapa 9 — Importação]] | Carregar o catálogo inicial a partir de planilha. | A fazer |
 
 Situações possíveis: **A fazer**, **Em execução**, **Concluída**. Atualize esta tabela quando a etapa mudar.

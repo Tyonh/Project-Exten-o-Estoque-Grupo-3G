@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Páginas acessíveis sem sessão ativa.
-const ROTAS_PUBLICAS = ["/login"];
+const ROTAS_PUBLICAS = ["/login", "/recuperar-senha"];
 
 function isRotaPublica(pathname: string): boolean {
   return ROTAS_PUBLICAS.some(
@@ -48,7 +48,12 @@ export async function proxy(request: NextRequest) {
   // e devem responder JSON, não um redirect HTML para /login.
   if (!user && !isRotaApi && !isRotaPublica(pathname)) {
     const url = request.nextUrl.clone();
+    // Guarda para onde a pessoa ia (por exemplo, o QR code de um documento):
+    // depois do login ela volta direto para lá.
+    const destino = `${pathname}${request.nextUrl.search}`;
     url.pathname = "/login";
+    url.search = "";
+    if (destino !== "/") url.searchParams.set("next", destino);
     return NextResponse.redirect(url);
   }
 

@@ -52,6 +52,15 @@ Preencha o `frontend/.env.local` com os valores que o responsável pelo projeto 
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave pública, usada no login |
 | `SUPABASE_SECRET_KEY` | Chave secreta do projeto de desenvolvimento (Project Settings > API Keys). Dá acesso total aos dados: trate como senha |
 
+### Configurar o login no Supabase
+
+No painel do Supabase, em **Authentication > URL Configuration**:
+
+- **Site URL**: `http://localhost:3000`
+- **Redirect URLs**: inclua `http://localhost:3000/**`
+
+Sem isso, o link de recuperação de senha não volta para o aplicativo. Em produção, troque pelo endereço real do sistema.
+
 ## 6. Rodar
 
 ```bash
@@ -75,6 +84,8 @@ Se algum item falhar, veja os problemas comuns abaixo e o guia [07 — Quando tr
 | "Seu perfil não tem permissão" ao movimentar | Seu perfil não é gerente de estoque nem admin |
 | Erro de conexão com o banco ao abrir qualquer tela | `SUPABASE_SECRET_KEY` ausente ou errada no `.env.local` |
 | Cadastro falha com "Muitos e-mails enviados em pouco tempo" | Limite de envio de e-mails do Supabase. Aguarde cerca de 1 hora. A solução definitiva está em "Confirmação de e-mail no cadastro", em `docs/04-architecture/decisions.md` |
+| O e-mail de recuperação de senha não chega | Limite de envio do Supabase, caixa de spam ou URL de retorno não configurada (veja "Configurar o login no Supabase") |
+| O link de recuperação volta para o login em vez da tela de nova senha | **Redirect URLs** do Supabase sem o endereço do aplicativo |
 | Listas vazias | Dados de teste não aplicados, ou perfil sem permissão de leitura |
 
 ## Montando um banco do zero

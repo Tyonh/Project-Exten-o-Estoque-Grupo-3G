@@ -11,6 +11,15 @@ Este documento é a especificação do banco, escrita para a frente de banco de 
 
 **O que não é trabalho do banco**: funções, gatilhos, visões e regras por perfil. Se alguma dessas coisas parecer necessária, converse com a frente de backend antes de criar.
 
+## Schema `estoque`
+
+Todas as tabelas, tipos e índices abaixo ficam no schema **`estoque`** do projeto Supabase da empresa, separado de `public` (onde ficam as tabelas do GEDOC). A decisão está em [[decisions#ADR-18 Schema estoque no projeto Supabase da empresa|ADR-18]]. A migração é `backend/supabase/migrations/20261030090000_schema_estoque.sql`.
+
+- Os nomes das tabelas continuam os desta página; só ganham o prefixo `estoque.` (`estoque.variantes`, `estoque.saldos`...). O backend aponta para o schema em `backend/src/servidor/banco.ts`.
+- `estoque.perfis` é independente de `public.perfis` do GEDOC. O login (`auth.users`) é o mesmo.
+- O schema precisa ser exposto na API: **Project Settings > API > Exposed schemas > `estoque`**. Sem isso o backend recebe "schema must be one of the following".
+- Só `service_role` tem permissão no schema. SQL escrito à mão usa `set local search_path = estoque, public;` ou o prefixo `estoque.`.
+
 ## Visão das tabelas
 
 ```mermaid
@@ -91,7 +100,7 @@ Em todas as tabelas, `id` é gerado pelo banco e `criado_em` recebe a data e hor
 | `id` | uuid | sim | O mesmo `id` do usuário no login do Supabase (`auth.users`). Apagar o usuário apaga o perfil |
 | `nome` | texto | sim | |
 | `email` | texto | sim | |
-| `cargo` | `cargo` | sim | Padrão `pendente` |
+| `cargo` | `cargo` | sim | Padrão `pendente`. O backend sempre informa o cargo ao criar um acesso pelo administrador |
 | `criado_em` | data e hora | sim | |
 
 **`categorias`**
@@ -124,6 +133,7 @@ Em todas as tabelas, `id` é gerado pelo banco e `criado_em` recebe a data e hor
 | `familia_id` | uuid | sim | Aponta para `familias` |
 | `codigo` | texto | sim | Único em todo o sistema |
 | `nome` | texto | sim | |
+| `marca` | texto | não | Marca do produto (Crown, 3G, Ebron...). Vazio quando não se sabe. Não pode ser só espaços. Filtro de catálogo e consulta |
 | `atributos` | JSON | sim | Padrão: objeto vazio |
 | `preco` | decimal (12,2) | não | Não pode ser negativo |
 | `imagem_url` | texto | não | |
@@ -152,7 +162,9 @@ Em todas as tabelas, `id` é gerado pelo banco e `criado_em` recebe a data e hor
 |---|---|---|---|
 | `id` | uuid | sim | |
 | `protocolo` | texto | sim | Único. É o que o QR code carrega |
-| `origem` | texto | sim | Nome do sistema que emitiu o documento |
+| `origem` | texto | sim | Nome do sistema que emitiu o documento (hoje `GEDOC`) |
+| `tipo_documento` | texto | não | `ORCAMENTO`, `AMOSTRA` ou `PRODUCAO`, como no GEDOC |
+| `validado_na_origem` | verdadeiro/falso | sim | Padrão falso. Verdadeiro quando o GEDOC já validou o documento. A baixa só é permitida para documento validado (regra do backend) |
 | `cliente_nome` | texto | não | |
 | `solicitante_nome` | texto | não | |
 | `status` | `status_documento` | sim | Padrão `pendente` |
@@ -231,6 +243,8 @@ Toda coluna marcada com "Aponta para" é uma chave estrangeira. O comportamento 
 - apagar um `inventarios` apaga os seus `inventario_itens`.
 
 Por causa do comportamento padrão, uma variante que já tem movimentação não pode ser apagada. É o esperado.
+
+Transferir uma conta para outra pessoa não muda o `id` de `perfis`: só nome, e-mail e senha. Por isso, as movimentações, documentos e inventários que apontam para esse `id` continuam ligados ao histórico.
 
 ## Acesso
 
