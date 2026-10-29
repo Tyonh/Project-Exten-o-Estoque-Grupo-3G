@@ -1,1 +1,129 @@
 @import "tailwindcss";
+
+@theme {
+  /* Tipografia — referência: Shopify Editions Winter '26.
+     Títulos: família display, peso bold, entrelinha curta e tracking
+     negativo. Corpo: família sans (Inter). */
+  --font-sans: var(--fonte-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--fonte-display), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Consolas, monospace;
+
+  --text-display-1: clamp(2.25rem, 1.75rem + 2.2vw, 3.5rem);
+  --text-display-1--line-height: 0.95;
+  --text-display-1--letter-spacing: -0.03em;
+  --text-display-1--font-weight: 700;
+
+  --text-display-2: clamp(1.75rem, 1.45rem + 1.2vw, 2.5rem);
+  --text-display-2--line-height: 1;
+  --text-display-2--letter-spacing: -0.02em;
+  --text-display-2--font-weight: 700;
+
+  --text-display-3: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);
+  --text-display-3--line-height: 1.1;
+  --text-display-3--letter-spacing: -0.015em;
+  --text-display-3--font-weight: 600;
+
+  /* Etiqueta pequena, maiúscula e espaçada (eyebrow). */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.08em;
+  --text-eyebrow--font-weight: 600;
+
+  /* Verde-petróleo da marca: botões, links e destaques. */
+  --color-marca-50: #f1f7f5;
+  --color-marca-100: #dcebe6;
+  --color-marca-200: #b9d8d0;
+  --color-marca-300: #8bbcb1;
+  --color-marca-400: #5b9b8f;
+  --color-marca-500: #347a6e;
+  --color-marca-600: #1e5d53;
+  --color-marca-700: #174b43;
+  --color-marca-800: #123b35;
+  --color-marca-900: #0d2c28;
+
+  /* Neutros quentes: papel, pedra e tinta. Substituem o cinza-azulado
+     padrão para o sistema não parecer um painel genérico. */
+  --color-slate-50: #faf8f3;
+  --color-slate-100: #f3f0e8;
+  --color-slate-200: #e4dfd2;
+  --color-slate-300: #d2ccbc;
+  --color-slate-400: #9c9585;
+  --color-slate-500: #746d5f;
+  --color-slate-600: #5a5448;
+  --color-slate-700: #3f3a31;
+  --color-slate-800: #28241d;
+  --color-slate-900: #15130f;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-100 text-[#303030] antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: pretty;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  ::selection {
+    background: var(--color-marca-200);
+    color: var(--color-marca-900);
+  }
+
+  /* Barra de rolagem discreta do menu lateral escuro. */
+  .barra-lateral {
+    scrollbar-width: thin;
+    scrollbar-color: #4f7567 transparent;
+  }
+
+  /* No Chrome, Edge e Safari a barra é desenhada com polegar arredondado.
+     O Firefox mantém a versão nativa definida acima. */
+  @supports selector(::-webkit-scrollbar) {
+    .barra-lateral {
+      scrollbar-width: auto;
+      scrollbar-color: auto;
+    }
+
+    .barra-lateral::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .barra-lateral::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .barra-lateral::-webkit-scrollbar-button {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    .barra-lateral::-webkit-scrollbar-thumb {
+      border: 2px solid #101a18;
+      border-radius: 999px;
+      background-color: #4f7567;
+    }
+
+    .barra-lateral::-webkit-scrollbar-thumb:hover {
+      background-color: #6f9a89;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-marca-600);
+    outline-offset: 2px;
+  }
+}

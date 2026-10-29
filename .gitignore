@@ -13,6 +13,11 @@ Thumbs.db
 # banco de dados a partir de docs/04-architecture/banco-de-dados.md.
 backend/supabase/migrations/20261005000000_schema_inicial.sql
 
+# Catálogo real da empresa (produtos e preços), gerado por
+# `npm run catalogo:gerar`. O repositório é público: não sobe. Quem aplica no
+# banco gera os arquivos na própria máquina a partir do produtos.db.
+backend/supabase/catalogo-real/
+
 # Dependências e arquivos gerados
 node_modules/
 .next/

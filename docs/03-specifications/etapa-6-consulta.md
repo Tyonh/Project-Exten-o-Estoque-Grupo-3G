@@ -21,24 +21,26 @@ RF-17, RF-18, RF-19, RNF-05, RNF-06.
 
 ### Front-end
 
-- [ ] **T6.1** Busca na tela inicial  
+- [x] **T6.1** Busca na tela inicial  
   Responsável: a definir
-- [ ] **T6.2** Tela do produto: saldo total e saldo por local, com o caminho de cada local  
+- [x] **T6.2** Tela do produto: saldo total e saldo por local, com o caminho de cada local  
   Responsável: a definir
-- [ ] **T6.3** Tela do local: o que há nele  
+- [x] **T6.3** Tela do local: o que há nele  
   Responsável: a definir
-- [ ] **T6.4** Lista de itens críticos, a partir da consulta de estoque por variante  
+- [x] **T6.4** Lista de itens críticos, a partir da consulta de estoque por variante  
   Responsável: a definir
-- [ ] **T6.5** Painel inicial com totais  
+- [x] **T6.5** Painel inicial com totais  
   Responsável: a definir
+
+> Situação em 28/10/2026: as telas de consulta e o painel usam a fotografia real do estoque carregada por `carregarDadosDoEstoque`. A busca e os totais são calculados no navegador sobre essa fotografia; a função de consulta dedicada e paginada (T6.6) ainda não foi separada.
 
 ## Pronto quando (Definition of Done)
 
 - [ ] Do login até achar o local de um produto em no máximo três toques no celular
 - [ ] A busca responde em até 1 segundo com a carga de teste
 - [ ] A soma dos saldos por local é igual ao saldo total exibido
-- [ ] Lint e verificação de tipos sem erros
-- [ ] Documentação atualizada no mesmo pull request
+- [x] Lint e verificação de tipos sem erros
+- [x] Documentação atualizada no mesmo pull request
 
 ## Ligações
 [[roteiro]] · [[PRD]] · [[domain-model]] · [[banco-de-dados]]

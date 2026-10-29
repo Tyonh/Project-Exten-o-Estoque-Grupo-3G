@@ -10,6 +10,8 @@
     "build": "npm run build --workspace frontend",
     "start": "npm run start --workspace frontend",
     "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "node --no-warnings --test \"backend/tests/*.test.ts\"",
+    "catalogo:gerar": "node --no-warnings backend/supabase/tools/gerar-catalogo.ts"
   }
 }

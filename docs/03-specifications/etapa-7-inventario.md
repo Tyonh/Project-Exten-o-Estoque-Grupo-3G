@@ -16,21 +16,23 @@ RF-20, RF-21, RF-22.
 
 ### Backend
 
-- [ ] **T7.6** Funções de inventário em `backend/src/inventarios.ts`: abrir (`abrirInventario`), listar itens, gravar a quantidade contada, incluir item, resumo das diferenças, concluir (`concluirInventario`) e cancelar (`cancelarInventario`)  
+- [x] **T7.6** Funções de inventário em `backend/src/inventarios.ts`: listar (`listarInventarios`), abrir (`abrirInventario`), buscar com itens e diferenças (`buscarInventario`), gravar a quantidade contada (`registrarContagem`), incluir item (`incluirItemNoInventario`), concluir (`concluirInventario`) e cancelar (`cancelarInventario`). As diferenças são calculadas por `backend/src/servidor/inventario-regras.ts`  
   Responsável: a definir
 
 ### Front-end
 
-- [ ] **T7.1** Abrir inventário de um local (função `abrirInventario`)  
+- [x] **T7.1** Abrir inventário de um local (função `abrirInventario`)  
   Responsável: a definir
-- [ ] **T7.2** Tela de contagem, pensada para celular  
+- [x] **T7.2** Tela de contagem, pensada para celular  
   Responsável: a definir
-- [ ] **T7.3** Incluir item encontrado que não estava na lista  
+- [x] **T7.3** Incluir item encontrado que não estava na lista  
   Responsável: a definir
-- [ ] **T7.4** Resumo das diferenças antes de concluir  
+- [x] **T7.4** Resumo das diferenças antes de concluir  
   Responsável: a definir
-- [ ] **T7.5** Concluir (função `concluirInventario`) e cancelar  
+- [x] **T7.5** Concluir (função `concluirInventario`) e cancelar  
   Responsável: a definir
+
+> Situação em 30/10/2026: telas ligadas ao backend; as regras de diferença estão testadas (`npm test`). **Falta validar com banco real** (cenários na fase 4 de [[plano-de-testes]]). Só pode contar, incluir, concluir ou cancelar quem opera (gerente de estoque e admin); os demais perfis só consultam.
 
 ## Pronto quando (Definition of Done)
 

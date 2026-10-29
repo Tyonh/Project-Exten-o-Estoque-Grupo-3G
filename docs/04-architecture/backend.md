@@ -17,7 +17,7 @@ Banco PostgreSQL (Supabase)
 ```
 
 - **O navegador nunca fala com o banco.** Toda leitura e toda gravação passam por uma função do backend.
-- **O login é do Supabase.** A sessão fica em cookie e é validada no servidor a cada chamada.
+- **O login é do Supabase.** A sessão fica em cookie e é validada no servidor a cada chamada. A recuperação de senha também: o link do e-mail volta para uma rota de `app/api/`, que troca o código por sessão.
 - **O servidor acessa o banco com a chave secreta do Supabase** (`SUPABASE_SECRET_KEY`), que só existe no servidor. Ela ignora a segurança por linha, e é por isso que só o backend a usa ([[decisions#ADR-16 Backend acessa o banco pela chave secreta|ADR-16]]).
 - **O banco é simples de propósito**: guarda os dados e recusa valores inválidos. Quem decide se uma operação pode acontecer é o backend.
 
@@ -30,7 +30,7 @@ Banco PostgreSQL (Supabase)
 | `backend/src/resultado.ts` | O formato de resposta das funções | Telas e backend |
 | `backend/src/cargos.ts` | Os perfis e os grupos de permissão | Telas e backend |
 | `frontend/proxy.ts` | Proteção de rotas: sem sessão, volta para o login | Next.js |
-| `frontend/app/api/` | Rotas chamadas por outros sistemas, como o recebimento de documentos de saída | Sistemas externos |
+| `frontend/app/api/` | Rotas chamadas por outros sistemas, como o recebimento de documentos de saída, e a confirmação do link de recuperação de senha | Sistemas externos e o Supabase |
 
 Uma tela nunca importa nada de `backend/src/servidor/` nem o cliente do banco.
 
@@ -55,9 +55,9 @@ Toda função começa conferindo quem está chamando. O perfil vem da sessão, n
 |---|---|---|
 | Consulta | estoquista, gerente, gerente de estoque, admin | Ler catálogo, locais, saldos, histórico, inventários e documentos |
 | Operação | gerente de estoque, admin | Cadastrar e editar catálogo e locais, movimentar estoque, fazer inventário e dar baixa em documentos |
-| Admin | admin | Alterar o perfil de outros usuários |
+| Admin | admin | Criar acessos, transferir contas, desconectar, apagar contas sem histórico e alterar o perfil de outros usuários |
 
-O perfil `pendente` e quem não tem sessão não leem nem gravam nada, exceto o próprio perfil. A tabela completa por ação está em [[security-model]]. Os grupos ficam em `backend/src/cargos.ts`: mudar quem pode o quê é alterar esse arquivo.
+O perfil `pendente` e quem não tem sessão não leem nem gravam nada, exceto o próprio perfil. Quem ainda está com a senha provisória também não usa as funções de estoque: o backend só permite ler o próprio perfil e trocar a senha. A tabela completa por ação está em [[security-model]]. Os grupos ficam em `backend/src/cargos.ts`: mudar quem pode o quê é alterar esse arquivo.
 
 ## Como uma operação de estoque acontece
 
@@ -108,6 +108,29 @@ Dá baixa em um documento de saída. As retiradas dizem de qual local sai cada i
 - Cada retirada vira uma movimentação de saída ligada ao documento, com a justificativa "Saída do documento" seguida do protocolo.
 - Ao final, o documento fica `baixado`, com quem baixou e quando.
 - Se faltar saldo para qualquer item, nada é baixado.
+- O documento precisa ter sido validado na origem (`validado_na_origem`). O GEDOC só o marca assim depois que o documento é validado lá.
+- Quem lê o QR code abre `/leitura/<protocolo>`. `buscarDocumento` devolve o documento com cada item, os locais com saldo e uma sugestão de retirada (do maior saldo para o menor, juntando locais quando preciso); `listarDocumentos` lista pendentes e baixados.
+- O documento é travado com uma gravação condicional (`status = pendente`). Os saldos são gravados um a um, de forma condicional, e as saídas entram em `movimentacoes` de uma só vez; qualquer falha desfaz os saldos e reabre o documento.
+
+### Recebimento de documentos do GEDOC (T8.1)
+
+`POST /api/documentos` (arquivo `frontend/app/api/documentos/route.ts`) recebe o documento. Não usa sessão de usuário: o GEDOC se identifica com o cabeçalho `Authorization: Bearer <GEDOC_INTEGRATION_TOKEN>`, comparado em tempo constante. Sem a variável configurada (mínimo 24 caracteres) a rota responde 503.
+
+```json
+{
+  "protocolo": "ORC-20261029-AB12",
+  "tipo_documento": "ORCAMENTO",
+  "cliente_nome": "Prefeitura de Fortaleza",
+  "solicitante_nome": "Maria",
+  "validado": true,
+  "itens": [{ "codigo": "50501", "quantidade": 10 }]
+}
+```
+
+- O protocolo segue o formato do GEDOC `PREFIXO-AAAAMMDD-XXXX` (é o que o QR code carrega).
+- Todo código precisa existir em `variantes`; senão a resposta é 422 com a lista dos códigos desconhecidos e nada é gravado.
+- Reenviar o mesmo protocolo atualiza o documento enquanto ele estiver `pendente` (o GEDOC reenvia ao validar, com `validado: true`). Documento `baixado` ou `cancelado` nunca é alterado (409).
+- Códigos repetidos no mesmo documento são somados.
 
 ### abrirInventario
 
@@ -130,8 +153,15 @@ Dá baixa em um documento de saída. As retiradas dizem de qual local sai cada i
 
 | Situação | Regra |
 |---|---|
-| Um usuário se cadastra | O backend cria a linha em `perfis` com perfil `pendente` |
-| Alterar o perfil de um usuário | Só admin |
+| Criar um acesso | Só admin. O backend cria o login no Supabase com senha provisória e a linha em `perfis` com o perfil escolhido; se a linha falhar, apaga o login |
+| Cadastro público | Não existe. A tela de login só entra em contas criadas pelo administrador |
+| Primeiro acesso | A conta nasce com `senha_provisoria` no `user_metadata`. O layout manda para `/primeiro-acesso` e as funções de estoque recusam até a troca; a troca limpa a marca |
+| Alterar o perfil de um usuário | Só admin. O admin não altera o próprio perfil |
+| Transferir um acesso | Só admin. Troca nome e e-mail do titular, gera nova senha provisória e mantém o mesmo `id` e cargo. O histórico continua; a pessoa anterior perde o acesso. O admin não transfere o próprio acesso |
+| Desconectar um acesso | Só admin. O cargo vira `pendente`; a sessão aberta perde o acesso na próxima chamada e o histórico é preservado |
+| Apagar um acesso | Só admin. O backend confere se a conta é autora de movimentação, baixa de documento ou inventário; se for, recusa. Sem histórico, apaga o login e o perfil de vez. O admin não apaga a própria conta |
+| Trocar a própria senha | Qualquer perfil ativo, em `/conta`, informando a senha atual. A nova senha precisa ter ao menos 6 caracteres e ser diferente da atual |
+| Senha provisória tentando usar o estoque | Recusado no backend até a troca da senha |
 | Código de variante, de local ou protocolo repetido | Recusado, com mensagem clara (o banco também recusa) |
 | Colocar um local dentro de si mesmo ou de um descendente | Recusado |
 | Desativar um local que ainda tem saldo | Recusado |
@@ -181,7 +211,13 @@ São o critério de aceite do backend. Cada linha precisa de um teste.
 | Desativar um local com mercadoria | Erro |
 | Estoquista ou gerente tentando movimentar ou cadastrar | Erro de permissão |
 | Perfil pendente ou visitante sem login chamando qualquer consulta | Não recebe nenhum dado |
-| Quem não é admin tentando alterar um perfil | Erro de permissão |
+| Conta com senha provisória chamando uma função de estoque | Erro pedindo para trocar a senha antes |
+| Quem não é admin tentando alterar um perfil, transferir, desconectar ou apagar um acesso | Erro de permissão |
+| Admin tentando transferir ou apagar a própria conta | Erro de permissão |
+| Transferir para um e-mail que já pertence a outra conta | Erro, e o perfil volta ao titular anterior |
+| Pessoa anterior tentando entrar depois da transferência | E-mail antigo e senha antiga não funcionam; a conta agora é do novo titular |
+| Apagar uma conta que tem histórico | Erro explicando para usar Desconectar; nada é apagado |
+| Troca de senha com a senha atual errada | Erro, e a senha não muda |
 
 ## Segredos
 

@@ -27,6 +27,7 @@ Leia nesta ordem. Os quatro primeiros não exigem conhecimento de programação.
 | `03-specifications` | Roteiro e etapas de construção, com tarefas |
 | `04-architecture` | Banco de dados, backend e decisões técnicas |
 | `06-security` | Quem pode fazer o quê |
+| `07-testes` | Plano de testes por fase, até o uso diário |
 | `08-observability` | Como acompanhar erros e auditoria |
 
 Os guias de trabalho da equipe (ambiente, Git, uso de IA, como pegar tarefas) ficam em `05-guides/`, na raiz do repositório.
