@@ -101,6 +101,18 @@ Use um celular real. Escaneie o QR do PDF (ou abra `/leitura/<protocolo>`).
 - [ ] Conferir em `/movimentacoes` o histórico com o autor correto
 - [ ] Marcar a Definition of Done de [[etapa-8-documentos]]
 
+### Locais
+
+| Cenário | Esperado |
+|---|---|
+| Criar um local por engano (nome ou código errado) e clicar em **Apagar** | Pede confirmação e o local some da árvore |
+| Apagar um local que tem sublocais | Recusado: "apague ou mova os sublocais antes" |
+| Apagar um local com mercadoria | Recusado: "dê baixa ou transfira antes" |
+| Apagar um local que já teve entrada, saída ou inventário (mesmo zerado) | Recusado, orientando a usar **Desativar**; o histórico continua com o endereço |
+| Estoquista abre a tela de locais | Vê a árvore, mas não vê Sublocal, Editar, Mover, Desativar nem Apagar |
+
+- [ ] Todos os cenários
+
 ### Leitura pela câmera (celular)
 
 A câmera do celular **tem que estar em https**: em `http` o navegador bloqueia o acesso à câmera (só `localhost` é exceção).
@@ -157,11 +169,11 @@ Duração sugerida: uma semana, com um turno e um gerente de estoque.
 
 | Fase | Data | Quem | Resultado |
 |---|---|---|---|
-| 0 | | | |
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-| 4 | | | |
+| 0 | 29/10/2026 | Claude Code | `npm run lint`, `npm run typecheck`, `npm run build` e `npm test` (31 testes) sem erros. |
+| 1 | 29/10/2026 | equipe | Schema `estoque` aplicado e exposto; catálogo real (3.905 variantes) carregado e visível no sistema. |
+| 2 | | | Saldos reais ainda não lançados (o estoque está zerado). |
+| 3 | 29/10/2026 | Claude Code | Cenários da rota `POST /api/documentos` com o banco real: 401, 400, 422, 201, 200 e 409. Em produção, o orçamento `O-20261029-4KNW` foi validado no GEDOC e chegou ao estoque. |
+| 4 | 29/10/2026 | Claude Code | Roteiro automatizado de 25 cenários contra o banco real, com o código do backend e a checagem de sessão trocada por um admin fixo: entrada de saldo, baixa (um item em dois locais, parcial, repetida, simultânea, sem saldo, sem validação), inventário completo e apagar local. **Falta**: login e perfil por tela, câmera do celular em https e os cenários de QR no celular. |
 | 5 | | | |
 
 ## Ligações

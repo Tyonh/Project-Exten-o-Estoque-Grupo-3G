@@ -38,7 +38,7 @@ RF-04 a RF-08, RNF-08.
 
 > Situação em 28/10/2026: as telas e as funções de catálogo operam com os dados reais do Supabase. A busca funciona no navegador, mas ainda sem paginação. A imagem é guardada como data URL no cadastro; o envio para um bucket do Supabase é a T3.4.
 
-> Atualização em 30/10/2026, com o catálogo real da 3G (3.905 variantes): a leitura do catálogo e dos saldos é paginada no backend (o Supabase corta em 1.000 linhas). A aba **Variantes** ganhou filtros de **categoria, família, marca e situação** (ativas/inativas), busca que também procura pela marca, contador de resultados e "Mostrar mais" de 50 em 50 (antes desenhava tudo de uma vez). A variante tem o campo **marca** (formulário com sugestão das marcas já cadastradas). A busca com paginação **no servidor** continua na T3.5 e a imagem em bucket na T3.4. Como o catálogo real foi montado: [[plano-de-testes]] (fase 1) e `backend/supabase/migrations/README.md`.
+> Atualização em 29/10/2026, com o catálogo real da 3G (3.905 variantes): a leitura do catálogo e dos saldos é paginada no backend (o Supabase corta em 1.000 linhas). A aba **Variantes** ganhou filtros de **categoria, família, marca e situação** (ativas/inativas), busca que também procura pela marca, contador de resultados e "Mostrar mais" de 50 em 50 (antes desenhava tudo de uma vez). A variante tem o campo **marca** (formulário com sugestão das marcas já cadastradas). A busca com paginação **no servidor** continua na T3.5 e a imagem em bucket na T3.4. Como o catálogo real foi montado: [[plano-de-testes]] (fase 1) e `backend/supabase/migrations/README.md`.
 
 ## Pronto quando (Definition of Done)
 

@@ -165,6 +165,7 @@ Dá baixa em um documento de saída. As retiradas dizem de qual local sai cada i
 | Código de variante, de local ou protocolo repetido | Recusado, com mensagem clara (o banco também recusa) |
 | Colocar um local dentro de si mesmo ou de um descendente | Recusado |
 | Desativar um local que ainda tem saldo | Recusado |
+| Apagar um local (`apagarLocal`) | Só quem opera (gerente de estoque e admin). Serve para corrigir erro de montagem: só é permitido se o local **não tem sublocais, mercadoria, movimentação nem inventário**. As mensagens levam a pessoa pelo caminho: apague ou mova os sublocais; dê baixa ou transfira a mercadoria; e, se já houver histórico, use Desativar. Linhas de saldo zerado sem movimentação são limpas junto. Regra em `backend/src/servidor/locais-regras.ts` |
 | Apagar uma variante com histórico | Recusado. A variante é desativada |
 | Informar ou incluir quantidade contada em um inventário | Só enquanto o inventário está `aberto` |
 | Alterar ou apagar uma movimentação | Não existe função para isso. Um erro se corrige com outra movimentação |
@@ -209,6 +210,8 @@ São o critério de aceite do backend. Cada linha precisa de um teste.
 | Abrir dois inventários do mesmo local | Erro no segundo |
 | Colocar um local dentro de um descendente | Erro |
 | Desativar um local com mercadoria | Erro |
+| Apagar um local com sublocais, mercadoria, movimentação ou inventário | Erro com a orientação (apagar os sublocais, dar baixa ou usar Desativar); nada é apagado |
+| Apagar um local vazio e sem histórico, criado por engano | Apagado de verdade, junto com as linhas de saldo zerado dele |
 | Estoquista ou gerente tentando movimentar ou cadastrar | Erro de permissão |
 | Perfil pendente ou visitante sem login chamando qualquer consulta | Não recebe nenhum dado |
 | Conta com senha provisória chamando uma função de estoque | Erro pedindo para trocar a senha antes |

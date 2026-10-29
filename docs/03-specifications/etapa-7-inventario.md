@@ -32,7 +32,7 @@ RF-20, RF-21, RF-22.
 - [x] **T7.5** Concluir (função `concluirInventario`) e cancelar  
   Responsável: a definir
 
-> Situação em 30/10/2026: telas ligadas ao backend; as regras de diferença estão testadas (`npm test`). **Falta validar com banco real** (cenários na fase 4 de [[plano-de-testes]]). Só pode contar, incluir, concluir ou cancelar quem opera (gerente de estoque e admin); os demais perfis só consultam.
+> Situação em 29/10/2026: telas ligadas ao backend; as regras de diferença estão testadas (`npm test`). **Falta validar com banco real** (cenários na fase 4 de [[plano-de-testes]]). Só pode contar, incluir, concluir ou cancelar quem opera (gerente de estoque e admin); os demais perfis só consultam.
 
 ## Pronto quando (Definition of Done)
 

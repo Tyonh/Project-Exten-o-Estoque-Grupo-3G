@@ -10,9 +10,11 @@ import {
   lerPreco,
   limparCodigo,
 } from "../src/servidor/classificacao.ts";
+import { CARGOS, eAdmin, eCargo, podeConsultar, podeOperar } from "../src/cargos.ts";
 import { destinoSeguro } from "../src/destino.ts";
 import { extrairProtocolo, validarPayloadDoGedoc } from "../src/servidor/documento-payload.ts";
 import { calcularAjustes, lerContagem } from "../src/servidor/inventario-regras.ts";
+import { motivoParaNaoApagar } from "../src/servidor/locais-regras.ts";
 import { sugerirRetiradas, validarRetiradas, type ItemPedido } from "../src/servidor/retiradas.ts";
 
 describe("classificação do catálogo", () => {
@@ -160,6 +162,49 @@ describe("destino depois do login", () => {
       assert.equal(destinoSeguro(ruim), "/");
     }
     assert.equal(destinoSeguro("//x.com", "/inicio"), "/inicio");
+  });
+});
+
+describe("permissões por cargo", () => {
+  it("só gerente de estoque e admin operam; os demais consultam ou nada", () => {
+    for (const cargo of CARGOS) {
+      assert.equal(podeOperar(cargo), cargo === "gerente_estoque" || cargo === "admin", `operar: ${cargo}`);
+    }
+    assert.equal(podeConsultar("pendente"), false);
+    for (const cargo of ["estoquista", "gerente", "gerente_estoque", "admin"] as const) {
+      assert.equal(podeConsultar(cargo), true, `consultar: ${cargo}`);
+    }
+  });
+
+  it("só o admin administra acessos, e valor desconhecido não vira cargo", () => {
+    assert.equal(eAdmin("admin"), true);
+    assert.equal(eAdmin("gerente_estoque"), false);
+    assert.equal(eCargo("admin"), true);
+    assert.equal(eCargo("Admin"), false);
+    assert.equal(eCargo(undefined), false);
+    assert.equal(eCargo("superusuario"), false);
+  });
+});
+
+describe("apagar local", () => {
+  const vazio = { sublocais: 0, temSaldo: false, movimentacoes: 0, inventarios: 0 };
+
+  it("deixa apagar um local criado por engano (sem nada ligado a ele)", () => {
+    assert.equal(motivoParaNaoApagar(vazio), null);
+  });
+
+  it("recusa local com sublocais, mercadoria ou histórico, e explica o que fazer", () => {
+    assert.match(motivoParaNaoApagar({ ...vazio, sublocais: 2 }) ?? "", /sublocais/);
+    assert.match(motivoParaNaoApagar({ ...vazio, temSaldo: true }) ?? "", /mercadoria/);
+    assert.match(motivoParaNaoApagar({ ...vazio, movimentacoes: 1 }) ?? "", /Desativar/);
+    assert.match(motivoParaNaoApagar({ ...vazio, inventarios: 1 }) ?? "", /Desativar/);
+  });
+
+  it("a ordem das mensagens leva a pessoa pelo caminho certo: sublocais, depois mercadoria, depois histórico", () => {
+    const tudo = { sublocais: 1, temSaldo: true, movimentacoes: 3, inventarios: 1 };
+    assert.match(motivoParaNaoApagar(tudo) ?? "", /sublocais/);
+    assert.match(motivoParaNaoApagar({ ...tudo, sublocais: 0 }) ?? "", /mercadoria/);
+    assert.match(motivoParaNaoApagar({ ...tudo, sublocais: 0, temSaldo: false }) ?? "", /histórico/);
   });
 });
 
