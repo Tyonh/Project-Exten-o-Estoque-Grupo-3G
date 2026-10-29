@@ -6,9 +6,13 @@ Cada requisito tem um código. As tarefas das [[roteiro|etapas]] apontam para es
 
 ### Acesso
 - **RF-01** Como usuário, quero entrar com e-mail e senha.
-- **RF-02** Como novo usuário, fico com perfil "pendente" e sem acesso aos dados até ser liberado.
-- **RF-03** Como administrador, quero definir o perfil de cada usuário.
+- **RF-02** Não existe cadastro público: o administrador cria o acesso com nome, e-mail e perfil, e o sistema mostra uma senha provisória uma única vez. No primeiro acesso, preciso trocar essa senha antes de usar as telas.
+- **RF-03** Como administrador, quero definir o perfil de cada usuário, transferir uma conta para outra pessoa, desconectar um acesso sem apagar seu histórico e apagar definitivamente contas sem histórico.
 - **RF-28** Como usuário, quero recuperar minha senha por e-mail quando esquecê-la.
+- **RF-29** Como usuário, quero trocar minha senha dentro da minha conta, informando a senha atual.
+- **RF-30** Como administrador, quero desconectar o acesso de uma pessoa e liberá-lo de novo depois, escolhendo o perfil.
+- **RF-31** Como administrador, quero apagar completamente uma conta que ainda não tenha histórico de movimentações, documentos ou inventários.
+- **RF-32** Como administrador, quero transferir uma conta de gerente, estoquista ou outro perfil para outra pessoa, mantendo o mesmo perfil e todo o histórico, com uma nova senha provisória.
 
 ### Catálogo
 - **RF-04** Como gerente de estoque, quero cadastrar [[glossario#Categoria|categorias]] com a lista de atributos que elas usam e um estoque mínimo padrão.

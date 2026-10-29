@@ -23,18 +23,20 @@ RF-04 a RF-08, RNF-08.
 
 ### Front-end
 
-- [ ] **T3.1** Tela de categorias, com a lista de atributos e o estoque mínimo padrão  
+- [x] **T3.1** Tela de categorias, com a lista de atributos e o estoque mínimo padrão  
   Responsável: a definir
-- [ ] **T3.2** Tela de famílias  
+- [x] **T3.2** Tela de famílias  
   Responsável: a definir
-- [ ] **T3.3** Tela de variantes: o formulário mostra os atributos da categoria  
+- [x] **T3.3** Tela de variantes: o formulário mostra os atributos da categoria  
   Responsável: a definir
 - [ ] **T3.4** Envio de imagem para o armazenamento do Supabase  
   Responsável: a definir
 - [ ] **T3.5** Busca por código ou nome, com paginação  
   Responsável: a definir
-- [ ] **T3.6** Desativar e reativar variante  
+- [x] **T3.6** Desativar e reativar variante  
   Responsável: a definir
+
+> Situação em 28/10/2026: as telas e as funções de catálogo operam com os dados reais do Supabase. A busca funciona no navegador, mas ainda sem paginação. A imagem é guardada como data URL no cadastro; o envio para um bucket do Supabase é a T3.4.
 
 ## Pronto quando (Definition of Done)
 
@@ -42,8 +44,8 @@ RF-04 a RF-08, RNF-08.
 - [ ] Código de variante repetido é recusado com mensagem clara
 - [ ] Estoquista vê o catálogo mas não vê botões de edição
 - [ ] A busca funciona em tela de celular
-- [ ] Lint e verificação de tipos sem erros
-- [ ] Documentação atualizada no mesmo pull request
+- [x] Lint e verificação de tipos sem erros
+- [x] Documentação atualizada no mesmo pull request
 
 ## Ligações
 [[roteiro]] · [[PRD]] · [[domain-model]] · [[banco-de-dados]]

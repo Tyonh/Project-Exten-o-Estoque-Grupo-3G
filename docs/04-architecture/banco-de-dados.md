@@ -91,7 +91,7 @@ Em todas as tabelas, `id` é gerado pelo banco e `criado_em` recebe a data e hor
 | `id` | uuid | sim | O mesmo `id` do usuário no login do Supabase (`auth.users`). Apagar o usuário apaga o perfil |
 | `nome` | texto | sim | |
 | `email` | texto | sim | |
-| `cargo` | `cargo` | sim | Padrão `pendente` |
+| `cargo` | `cargo` | sim | Padrão `pendente`. O backend sempre informa o cargo ao criar um acesso pelo administrador |
 | `criado_em` | data e hora | sim | |
 
 **`categorias`**
@@ -231,6 +231,8 @@ Toda coluna marcada com "Aponta para" é uma chave estrangeira. O comportamento 
 - apagar um `inventarios` apaga os seus `inventario_itens`.
 
 Por causa do comportamento padrão, uma variante que já tem movimentação não pode ser apagada. É o esperado.
+
+Transferir uma conta para outra pessoa não muda o `id` de `perfis`: só nome, e-mail e senha. Por isso, as movimentações, documentos e inventários que apontam para esse `id` continuam ligados ao histórico.
 
 ## Acesso
 

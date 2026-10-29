@@ -55,9 +55,9 @@ Toda função começa conferindo quem está chamando. O perfil vem da sessão, n
 |---|---|---|
 | Consulta | estoquista, gerente, gerente de estoque, admin | Ler catálogo, locais, saldos, histórico, inventários e documentos |
 | Operação | gerente de estoque, admin | Cadastrar e editar catálogo e locais, movimentar estoque, fazer inventário e dar baixa em documentos |
-| Admin | admin | Alterar o perfil de outros usuários |
+| Admin | admin | Criar acessos, transferir contas, desconectar, apagar contas sem histórico e alterar o perfil de outros usuários |
 
-O perfil `pendente` e quem não tem sessão não leem nem gravam nada, exceto o próprio perfil. A tabela completa por ação está em [[security-model]]. Os grupos ficam em `backend/src/cargos.ts`: mudar quem pode o quê é alterar esse arquivo.
+O perfil `pendente` e quem não tem sessão não leem nem gravam nada, exceto o próprio perfil. Quem ainda está com a senha provisória também não usa as funções de estoque: o backend só permite ler o próprio perfil e trocar a senha. A tabela completa por ação está em [[security-model]]. Os grupos ficam em `backend/src/cargos.ts`: mudar quem pode o quê é alterar esse arquivo.
 
 ## Como uma operação de estoque acontece
 
@@ -130,8 +130,15 @@ Dá baixa em um documento de saída. As retiradas dizem de qual local sai cada i
 
 | Situação | Regra |
 |---|---|
-| Um usuário se cadastra | O backend cria a linha em `perfis` com perfil `pendente` |
-| Alterar o perfil de um usuário | Só admin |
+| Criar um acesso | Só admin. O backend cria o login no Supabase com senha provisória e a linha em `perfis` com o perfil escolhido; se a linha falhar, apaga o login |
+| Cadastro público | Não existe. A tela de login só entra em contas criadas pelo administrador |
+| Primeiro acesso | A conta nasce com `senha_provisoria` no `user_metadata`. O layout manda para `/primeiro-acesso` e as funções de estoque recusam até a troca; a troca limpa a marca |
+| Alterar o perfil de um usuário | Só admin. O admin não altera o próprio perfil |
+| Transferir um acesso | Só admin. Troca nome e e-mail do titular, gera nova senha provisória e mantém o mesmo `id` e cargo. O histórico continua; a pessoa anterior perde o acesso. O admin não transfere o próprio acesso |
+| Desconectar um acesso | Só admin. O cargo vira `pendente`; a sessão aberta perde o acesso na próxima chamada e o histórico é preservado |
+| Apagar um acesso | Só admin. O backend confere se a conta é autora de movimentação, baixa de documento ou inventário; se for, recusa. Sem histórico, apaga o login e o perfil de vez. O admin não apaga a própria conta |
+| Trocar a própria senha | Qualquer perfil ativo, em `/conta`, informando a senha atual. A nova senha precisa ter ao menos 6 caracteres e ser diferente da atual |
+| Senha provisória tentando usar o estoque | Recusado no backend até a troca da senha |
 | Código de variante, de local ou protocolo repetido | Recusado, com mensagem clara (o banco também recusa) |
 | Colocar um local dentro de si mesmo ou de um descendente | Recusado |
 | Desativar um local que ainda tem saldo | Recusado |
@@ -181,7 +188,13 @@ São o critério de aceite do backend. Cada linha precisa de um teste.
 | Desativar um local com mercadoria | Erro |
 | Estoquista ou gerente tentando movimentar ou cadastrar | Erro de permissão |
 | Perfil pendente ou visitante sem login chamando qualquer consulta | Não recebe nenhum dado |
-| Quem não é admin tentando alterar um perfil | Erro de permissão |
+| Conta com senha provisória chamando uma função de estoque | Erro pedindo para trocar a senha antes |
+| Quem não é admin tentando alterar um perfil, transferir, desconectar ou apagar um acesso | Erro de permissão |
+| Admin tentando transferir ou apagar a própria conta | Erro de permissão |
+| Transferir para um e-mail que já pertence a outra conta | Erro, e o perfil volta ao titular anterior |
+| Pessoa anterior tentando entrar depois da transferência | E-mail antigo e senha antiga não funcionam; a conta agora é do novo titular |
+| Apagar uma conta que tem histórico | Erro explicando para usar Desconectar; nada é apagado |
+| Troca de senha com a senha atual errada | Erro, e a senha não muda |
 
 ## Segredos
 
