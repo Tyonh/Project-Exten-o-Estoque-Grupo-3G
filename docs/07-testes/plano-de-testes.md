@@ -171,9 +171,10 @@ Duração sugerida: uma semana, com um turno e um gerente de estoque.
 |---|---|---|---|
 | 0 | 29/10/2026 | Claude Code | `npm run lint`, `npm run typecheck`, `npm run build` e `npm test` (31 testes) sem erros. |
 | 1 | 29/10/2026 | equipe | Schema `estoque` aplicado e exposto; catálogo real (3.905 variantes) carregado e visível no sistema. |
-| 2 | | | Saldos reais ainda não lançados (o estoque está zerado). |
+| 2 | 29/10/2026 | equipe | **Decisão:** não haverá carga de saldos por planilha nem por script. A contagem será feita **manualmente**, local por local, pelo próprio sistema (inventário com "Incluir item encontrado", ou entrada em `/movimentacoes/nova`). Até lá o estoque fica zerado, e documentos validados mostram "faltam N unidades". |
 | 3 | 29/10/2026 | Claude Code | Cenários da rota `POST /api/documentos` com o banco real: 401, 400, 422, 201, 200 e 409. Em produção, o orçamento `O-20261029-4KNW` foi validado no GEDOC e chegou ao estoque. |
-| 4 | 29/10/2026 | Claude Code | Roteiro automatizado de 25 cenários contra o banco real, com o código do backend e a checagem de sessão trocada por um admin fixo: entrada de saldo, baixa (um item em dois locais, parcial, repetida, simultânea, sem saldo, sem validação), inventário completo e apagar local. **Falta**: login e perfil por tela, câmera do celular em https e os cenários de QR no celular. |
+| 4 | 29/10/2026 | Claude Code | Roteiro automatizado de 25 cenários contra o banco real, com o código do backend e a checagem de sessão trocada por um admin fixo: entrada de saldo, baixa (um item em dois locais, parcial, repetida, simultânea, sem saldo, sem validação), inventário completo e apagar local. **Falta**: login e perfil por tela e os demais cenários de QR no celular (ver a tabela da fase 4). |
+| 4 (celular) | 29/10/2026 | equipe | **A leitura do QR code pela câmera funciona** com o sistema de estoque em produção. Não ficou registrado em quais aparelhos (Android ou iPhone) nem quais cenários da tabela foram repetidos. |
 | 5 | | | |
 
 ## Ligações
