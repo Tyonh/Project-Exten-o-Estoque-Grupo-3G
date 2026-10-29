@@ -21,7 +21,7 @@ export function Cabecalho({ nome, cargo, aoSair, saindo = false }: CabecalhoProp
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
-        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-marca-600 text-white">
+        <span className="grid size-9 shrink-0 place-items-center rounded-md bg-marca-600 text-white">
           <Boxes className="size-5" aria-hidden />
         </span>
 

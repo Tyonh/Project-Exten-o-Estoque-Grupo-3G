@@ -50,7 +50,7 @@ export default function RedefinirSenhaPage() {
     <main className="flex min-h-dvh items-center justify-center bg-slate-100 px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <span className="mx-auto mb-3 grid size-12 place-items-center rounded-xl bg-marca-600 text-white">
+          <span className="mx-auto mb-3 grid size-12 place-items-center rounded-md bg-marca-600 text-white">
             <Boxes className="size-6" aria-hidden />
           </span>
           <h1 className="text-display-1 text-slate-900">Estoque 3G</h1>

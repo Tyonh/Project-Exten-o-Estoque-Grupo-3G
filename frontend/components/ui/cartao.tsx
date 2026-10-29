@@ -12,13 +12,13 @@ interface CartaoProps extends HTMLAttributes<HTMLDivElement> {
 export function Cartao({ titulo, descricao, icone: Icone, className, children, ...props }: CartaoProps) {
   return (
     <section
-      className={cn("rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6", className)}
+      className={cn("rounded-lg border border-slate-200 bg-white p-4 sm:p-5", className)}
       {...props}
     >
       {(titulo || descricao) && (
         <header className="mb-4 flex items-start gap-3">
           {Icone && (
-            <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-marca-50 text-marca-700">
+            <span className="mt-0.5 shrink-0 text-marca-700">
               <Icone className="size-5" aria-hidden />
             </span>
           )}

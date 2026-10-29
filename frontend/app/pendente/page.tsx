@@ -11,8 +11,9 @@ import { Alerta } from "@/components/ui/alerta";
 import { Botao } from "@/components/ui/botao";
 import { Cartao } from "@/components/ui/cartao";
 
-// Tela "aguardando liberação" provisória, já usando a base visual. A versão
-// final é a tarefa T2.2 (docs/03-specifications/etapa-2-acesso.md).
+// Tela para quem está com o acesso sem liberação. Contas criadas pelo
+// administrador já nascem liberadas; esta tela cobre acessos revogados e
+// contas antigas que ainda estejam com o perfil `pendente`.
 export default function PendentePage() {
   const router = useRouter();
   const [perfil, setPerfil] = useState<Perfil | null>(null);
@@ -74,8 +75,8 @@ export default function PendentePage() {
     <main className="flex min-h-dvh items-center justify-center bg-slate-100 px-4 py-10">
       <div className="w-full max-w-md">
         <Cartao
-          titulo="Aguardando liberação"
-          descricao="Sua conta já existe, mas ainda não foi liberada."
+          titulo="Acesso sem liberação"
+          descricao="Este acesso está encerrado ou ainda não foi liberado pelo administrador."
           icone={Clock}
         >
           {perfil && (

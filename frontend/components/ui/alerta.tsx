@@ -36,7 +36,7 @@ export function Alerta({ tom = "info", titulo, role, className, children }: Aler
   return (
     <div
       role={role ?? (tom === "erro" ? "alert" : "status")}
-      className={cn("flex items-start gap-3 rounded-lg border p-3 text-sm", ESTILOS[tom], className)}
+      className={cn("flex items-start gap-3 rounded-md border p-3 text-sm", ESTILOS[tom], className)}
     >
       <Icone className="mt-0.5 size-4 shrink-0" aria-hidden />
       <div className="min-w-0">

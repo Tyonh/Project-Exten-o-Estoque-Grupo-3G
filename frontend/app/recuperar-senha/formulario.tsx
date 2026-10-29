@@ -44,7 +44,7 @@ export function FormularioDeRecuperacao({ erroDeLink }: FormularioDeRecuperacaoP
     <main className="flex min-h-dvh items-center justify-center bg-slate-100 px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <span className="mx-auto mb-3 grid size-12 place-items-center rounded-xl bg-marca-600 text-white">
+          <span className="mx-auto mb-3 grid size-12 place-items-center rounded-md bg-marca-600 text-white">
             <Boxes className="size-6" aria-hidden />
           </span>
           <h1 className="text-display-1 text-slate-900">Estoque 3G</h1>
@@ -101,7 +101,7 @@ export function FormularioDeRecuperacao({ erroDeLink }: FormularioDeRecuperacaoP
 
         <Link
           href="/login"
-          className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
+          className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
         >
           <ArrowLeft className="size-4" aria-hidden />
           Voltar para o login

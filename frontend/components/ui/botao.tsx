@@ -7,7 +7,7 @@ type Tamanho = "sm" | "md" | "lg";
 
 const VARIANTES: Record<Variante, string> = {
   primario: "bg-marca-600 text-white hover:bg-marca-700 active:bg-marca-800",
-  secundario: "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
+  secundario: "border border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50",
   perigo: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
   fantasma: "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
 };
@@ -42,7 +42,7 @@ export function Botao({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-colors",
+        "inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-colors",
         "disabled:cursor-not-allowed disabled:opacity-60",
         VARIANTES[variante],
         TAMANHOS[tamanho],

@@ -2,24 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Boxes, LogIn, UserPlus } from "lucide-react";
-import { cadastrar, entrar } from "@estoque/backend/sessao";
+import { Boxes, LogIn } from "lucide-react";
+import { entrar } from "@estoque/backend/sessao";
 import { Alerta } from "@/components/ui/alerta";
 import { Botao } from "@/components/ui/botao";
 import { Campo } from "@/components/ui/campo";
 import { Cartao } from "@/components/ui/cartao";
 
-type Modo = "entrar" | "cadastrar";
-
 interface FormularioDeLoginProps {
   senhaAlterada: boolean;
 }
 
-// Formulário da tela de login. É um componente separado para a página poder
-// ler a mensagem de retorno no servidor, sem depender do endereço no navegador.
+// Formulário da tela de login. Não existe cadastro público: o acesso é criado
+// pelo administrador em `/usuarios`.
 export function FormularioDeLogin({ senhaAlterada }: FormularioDeLoginProps) {
-  const [modo, setModo] = useState<Modo>("entrar");
-  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [isEnviando, setIsEnviando] = useState(false);
@@ -27,12 +23,6 @@ export function FormularioDeLogin({ senhaAlterada }: FormularioDeLoginProps) {
   const [aviso, setAviso] = useState<string | null>(
     senhaAlterada ? "Senha alterada. Entre com a nova senha." : null,
   );
-
-  function trocarModo(novoModo: Modo) {
-    setModo(novoModo);
-    setErro(null);
-    setAviso(null);
-  }
 
   async function handleEntrar() {
     const resultado = await entrar(email, senha);
@@ -44,38 +34,20 @@ export function FormularioDeLogin({ senhaAlterada }: FormularioDeLoginProps) {
     window.location.href = "/";
   }
 
-  async function handleCadastrar() {
-    const resultado = await cadastrar({ nome, email, senha });
-    if (!resultado.ok) {
-      setErro(resultado.erro);
-      return;
-    }
-    setAviso("Conta criada. Aguarde a liberação do administrador para acessar o sistema.");
-    setSenha("");
-    setModo("entrar");
-  }
-
   async function handleSubmit(evento: React.FormEvent<HTMLFormElement>) {
     evento.preventDefault();
     setIsEnviando(true);
     setErro(null);
     setAviso(null);
-
-    if (modo === "entrar") {
-      await handleEntrar();
-    } else {
-      await handleCadastrar();
-    }
+    await handleEntrar();
     setIsEnviando(false);
   }
-
-  const titulo = modo === "entrar" ? "Entrar" : "Criar conta";
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-slate-100 px-4 py-10">
       <div className="w-full max-w-sm">
         <div className="mb-6 text-center">
-          <span className="mx-auto mb-3 grid size-12 place-items-center rounded-xl bg-marca-600 text-white">
+          <span className="mx-auto mb-3 grid size-12 place-items-center rounded-md bg-marca-600 text-white">
             <Boxes className="size-6" aria-hidden />
           </span>
           <h1 className="text-display-1 text-slate-900">Estoque 3G</h1>
@@ -85,20 +57,12 @@ export function FormularioDeLogin({ senhaAlterada }: FormularioDeLoginProps) {
         </div>
 
         <Cartao>
-          <h2 className="mb-4 text-display-3 text-slate-900">{titulo}</h2>
+          <h2 className="mb-1 text-display-3 text-slate-900">Entrar</h2>
+          <p className="mb-4 text-xs text-slate-500">
+            O acesso é criado pelo administrador do sistema.
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {modo === "cadastrar" && (
-              <Campo
-                rotulo="Nome completo"
-                type="text"
-                required
-                autoComplete="name"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-            )}
-
             <Campo
               rotulo="E-mail"
               type="email"
@@ -112,9 +76,7 @@ export function FormularioDeLogin({ senhaAlterada }: FormularioDeLoginProps) {
               rotulo="Senha"
               type="password"
               required
-              minLength={6}
-              dica={modo === "cadastrar" ? "Ao menos 6 caracteres." : undefined}
-              autoComplete={modo === "entrar" ? "current-password" : "new-password"}
+              autoComplete="current-password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
@@ -122,36 +84,24 @@ export function FormularioDeLogin({ senhaAlterada }: FormularioDeLoginProps) {
             {erro && <Alerta tom="erro">{erro}</Alerta>}
             {aviso && <Alerta tom="sucesso">{aviso}</Alerta>}
 
-            <Botao
-              type="submit"
-              carregando={isEnviando}
-              icone={modo === "entrar" ? LogIn : UserPlus}
-              className="w-full"
-            >
-              {isEnviando ? "Aguarde..." : titulo}
+            <Botao type="submit" carregando={isEnviando} icone={LogIn} className="w-full">
+              {isEnviando ? "Aguarde..." : "Entrar"}
             </Botao>
           </form>
 
-          {modo === "entrar" && (
-            <div className="mt-4 text-center">
-              <Link
-                href="/recuperar-senha"
-                className="text-sm font-medium text-marca-700 hover:underline"
-              >
-                Esqueci minha senha
-              </Link>
-            </div>
-          )}
+          <div className="mt-4 text-center">
+            <Link
+              href="/recuperar-senha"
+              className="text-sm font-medium text-marca-700 hover:underline"
+            >
+              Esqueci minha senha
+            </Link>
+          </div>
         </Cartao>
 
-        <Botao
-          type="button"
-          variante="fantasma"
-          className="mt-3 w-full"
-          onClick={() => trocarModo(modo === "entrar" ? "cadastrar" : "entrar")}
-        >
-          {modo === "entrar" ? "Não tenho conta: criar uma" : "Já tenho conta: entrar"}
-        </Botao>
+        <p className="mt-4 text-center text-xs leading-relaxed text-slate-500">
+          Precisa de acesso? Fale com o administrador responsável pelo estoque.
+        </p>
       </div>
     </main>
   );
