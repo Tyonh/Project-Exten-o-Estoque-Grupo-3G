@@ -1,19 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Upload } from "lucide-react";
+import { ArrowLeft, CircleCheck, FileSpreadsheet, ListChecks, Upload } from "lucide-react";
 import { podeOperar } from "@estoque/backend/cargos";
-import { EmConstrucao } from "@/components/layout/em-construcao";
+import { AguardandoBackend } from "@/components/layout/aguardando-backend";
 import { Pagina } from "@/components/layout/pagina";
 import { Alerta } from "@/components/ui/alerta";
+import { Botao } from "@/components/ui/botao";
+import { Cartao } from "@/components/ui/cartao";
+import { EstadoVazio } from "@/components/ui/estado-vazio";
 import { usePrototipo } from "@/prototipo/contexto";
 
+/** T9.2: envio do CSV, prévia com as linhas problemáticas e gravação. */
 export default function ImportacaoPage() {
   const { cargoVisualizado } = usePrototipo();
 
   if (!podeOperar(cargoVisualizado)) {
     return (
-      <Pagina titulo="Importação" descricao="Importar catálogo e saldos a partir de uma planilha.">
+      <Pagina titulo="Importação" descricao="Importar o catálogo a partir de uma planilha.">
         <Alerta tom="atencao">
           Seu perfil consulta o estoque, mas não importa planilhas. Troque o perfil no menu para ver
           esta tela como gerente de estoque.
@@ -30,16 +34,37 @@ export default function ImportacaoPage() {
   }
 
   return (
-    <EmConstrucao
+    <Pagina
+      sobretitulo="Etapa 9"
       titulo="Importação"
-      descricao="Trazer uma planilha de catálogo ou de saldos com conferência antes de gravar."
-      etapa="Etapa 9"
-      icone={Upload}
-      itens={[
-        "Enviar um arquivo CSV e mapear as colunas.",
-        "Conferir as linhas, os erros e o que será criado ou atualizado.",
-        "Confirmar a importação em uma operação única.",
-      ]}
-    />
+      descricao="Trazer uma planilha de catálogo com conferência antes de gravar."
+    >
+      <div className="space-y-4">
+        <AguardandoBackend funcoes={["prepararImportacao", "gravarImportacao"]} />
+        <Cartao
+          titulo="1. Enviar o arquivo"
+          descricao="CSV com categoria, família, código, nome e atributos."
+          icone={Upload}
+        >
+          <Botao variante="secundario" icone={Upload} disabled>
+            Escolher arquivo CSV
+          </Botao>
+        </Cartao>
+        <Cartao
+          titulo="2. Conferir"
+          descricao="Prévia das linhas e lista das que têm problema (código repetido ou campo vazio)."
+          icone={ListChecks}
+        >
+          <EstadoVazio icone={FileSpreadsheet} titulo="Nenhum arquivo enviado" />
+        </Cartao>
+        <Cartao
+          titulo="3. Gravar"
+          descricao="Cria o que faltar. Importar o mesmo arquivo de novo não duplica nada."
+          icone={CircleCheck}
+        >
+          <Botao disabled>Confirmar importação</Botao>
+        </Cartao>
+      </div>
+    </Pagina>
   );
 }
