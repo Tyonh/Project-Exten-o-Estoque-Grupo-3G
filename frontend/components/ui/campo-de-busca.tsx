@@ -32,6 +32,9 @@ export function CampoDeBusca({
         className={cn(
           "block h-10 w-full rounded-md border border-slate-300 bg-white pl-9 pr-10 text-sm text-slate-900",
           "placeholder:text-slate-400 focus:border-marca-500 focus:ring-2 focus:ring-marca-100",
+          // O navegador desenha um × próprio em `type="search"`; o botão abaixo
+          // já limpa a busca, então o nativo some para não aparecer em dobro.
+          "[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-cancel-button]:appearance-none",
         )}
       />
       {valor && (
