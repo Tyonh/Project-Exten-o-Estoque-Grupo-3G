@@ -15,6 +15,7 @@ import { carregarDadosDoEstoque } from "@estoque/backend/consulta";
 import { confirmarSaidaDocumento as confirmarSaidaDocumentoNoBanco } from "@estoque/backend/documentos";
 import {
   alternarLocal as alternarLocalNoBanco,
+  apagarLocal as apagarLocalNoBanco,
   criarLocal as criarLocalNoBanco,
   editarLocal as editarLocalNoBanco,
   moverLocal as moverLocalNoBanco,
@@ -55,6 +56,7 @@ interface ContextoDoPrototipo {
   editarLocal: (id: string, entrada: NovoLocal) => Promise<Resultado<Local>>;
   moverLocal: (id: string, paiId: string | null) => Promise<Resultado<Local>>;
   alternarLocal: (id: string) => Promise<Resultado<Local>>;
+  apagarLocal: (id: string) => Promise<Resultado<null>>;
 
   registrarMovimentacao: (
     entrada: DadosDeMovimentacao,
@@ -195,6 +197,15 @@ export function ProvedorDoPrototipo({
   async function alternarLocal(id: string): Promise<Resultado<Local>> {
     const resultado = await alternarLocalNoBanco(id);
     if (resultado.ok) await atualizarDados();
+    return resultado;
+  }
+
+  async function apagarLocal(id: string): Promise<Resultado<null>> {
+    const resultado = await apagarLocalNoBanco(id);
+    if (resultado.ok) {
+      await atualizarDados();
+      setMensagem("Local apagado.");
+    }
     return resultado;
   }
 
@@ -389,6 +400,7 @@ export function ProvedorDoPrototipo({
     editarLocal,
     moverLocal,
     alternarLocal,
+    apagarLocal,
     registrarMovimentacao,
     confirmarSaidaDocumento,
     recarregarDados: atualizarDados,

@@ -34,6 +34,8 @@ RF-09, RF-10, RF-11.
 
 > Situação em 28/10/2026: a árvore e as funções operam com os dados reais. A sugestão automática de código (T4.3) ainda não foi feita.
 
+> Atualização em 29/10/2026: além de **Desativar**, a tela do local tem **Apagar**, para corrigir um local criado por engano (nome, código ou lugar errado). O backend (`apagarLocal`) só apaga local **sem sublocais, mercadoria, movimentação nem inventário**; com histórico a única saída é desativar, para o histórico nunca perder o endereço. Quem opera (gerente de estoque e admin) pode apagar; os demais perfis só consultam. Testado com banco real em [[plano-de-testes]].
+
 ## Pronto quando (Definition of Done)
 
 - [ ] Montar a árvore Galpão > Setor > Módulo pela tela

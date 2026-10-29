@@ -11,6 +11,7 @@ import {
   Pencil,
   Plus,
   Power,
+  Trash2,
 } from "lucide-react";
 import { Alerta } from "@/components/ui/alerta";
 import { Botao } from "@/components/ui/botao";
@@ -45,10 +46,12 @@ export function DetalheDoLocal({
     itensNoLocal,
     totalNoLocal,
     alternarLocal,
+    apagarLocal,
   } = usePrototipo();
   const [incluirDescendentes, setIncluirDescendentes] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [alternando, setAlternando] = useState(false);
+  const [apagando, setApagando] = useState(false);
 
   const local = dados.locais.find((item) => item.id === localId);
 
@@ -84,6 +87,27 @@ export function DetalheDoLocal({
     const resultado = await alternarLocal(local.id);
     setAlternando(false);
     if (!resultado.ok) setErro(resultado.erro);
+  }
+
+  async function apagar() {
+    if (!local) return;
+    setErro(null);
+    if (
+      !window.confirm(
+        `Apagar ${local.nome} (${local.codigo})?\n\nSó é possível porque ele não tem sublocais, mercadoria nem histórico. Isso não pode ser desfeito.`,
+      )
+    ) {
+      return;
+    }
+    const paiId = local.pai_id;
+    setApagando(true);
+    const resultado = await apagarLocal(local.id);
+    setApagando(false);
+    if (!resultado.ok) {
+      setErro(resultado.erro);
+      return;
+    }
+    if (paiId) aoSelecionar(paiId);
   }
 
   return (
@@ -152,6 +176,16 @@ export function DetalheDoLocal({
                 }
               >
                 {local.ativo ? "Desativar" : "Reativar"}
+              </Botao>
+              <Botao
+                tamanho="sm"
+                variante="perigo"
+                icone={Trash2}
+                onClick={apagar}
+                carregando={apagando}
+                title="Apaga um local criado por engano. Só funciona se ele não tiver sublocais, mercadoria nem histórico."
+              >
+                Apagar
               </Botao>
             </div>
           )}

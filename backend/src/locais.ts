@@ -2,6 +2,7 @@
 
 import { falha, sucesso, type Resultado } from "./resultado";
 import { banco } from "./servidor/banco";
+import { motivoParaNaoApagar } from "./servidor/locais-regras";
 import { exigirConsulta, exigirOperacao } from "./servidor/perfil";
 import type { Local, NovoLocal } from "./tipos";
 
@@ -247,6 +248,58 @@ export async function moverLocal(
   if (!data) return falha("Local não encontrado.");
 
   return sucesso(mapearLocal(data as LinhaDoBanco));
+}
+
+/**
+ * Apaga um local criado por engano. Só é permitido quando ele não tem
+ * sublocais, mercadoria, movimentação nem inventário: o histórico nunca é
+ * apagado. Local com histórico continua podendo ser desativado.
+ */
+export async function apagarLocal(id: string): Promise<Resultado<null>> {
+  const autor = await exigirOperacao();
+  if (!autor.ok) return autor;
+
+  const locais = await todosOsLocais();
+  if (!locais) return falha("Não foi possível conferir os locais.");
+  if (!locais.some((local) => local.id === id)) return falha("Local não encontrado.");
+
+  const [saldos, comoOrigem, comoDestino, inventarios] = await Promise.all([
+    banco().from("saldos").select("quantidade").eq("local_id", id),
+    banco().from("movimentacoes").select("id", { count: "exact", head: true }).eq("local_origem_id", id),
+    banco().from("movimentacoes").select("id", { count: "exact", head: true }).eq("local_destino_id", id),
+    banco().from("inventarios").select("id", { count: "exact", head: true }).eq("local_id", id),
+  ]);
+  const falhaNaConferencia = [saldos, comoOrigem, comoDestino, inventarios].find((r) => r.error);
+  if (falhaNaConferencia?.error) {
+    console.error("[locais] Falha ao conferir o local antes de apagar:", falhaNaConferencia.error.message);
+    return falha("Não foi possível conferir o local. Nada foi apagado.");
+  }
+
+  const motivo = motivoParaNaoApagar({
+    sublocais: locais.filter((local) => local.pai_id === id).length,
+    temSaldo: (saldos.data ?? []).some((saldo) => Number(saldo.quantidade) > 0),
+    movimentacoes: (comoOrigem.count ?? 0) + (comoDestino.count ?? 0),
+    inventarios: inventarios.count ?? 0,
+  });
+  if (motivo) return falha(motivo);
+
+  // Linhas de saldo zerado, sem nenhuma movimentação por trás, só atrapalham a exclusão.
+  const { error: erroSaldos } = await banco().from("saldos").delete().eq("local_id", id);
+  if (erroSaldos) {
+    console.error("[locais] Falha ao limpar os saldos zerados:", erroSaldos.message);
+    return falha("Não foi possível apagar o local.");
+  }
+
+  const { error } = await banco().from("locais").delete().eq("id", id);
+  if (error) {
+    // 23503: alguém movimentou o local entre a conferência e a exclusão.
+    if (error.code === "23503") {
+      return falha("Este local acabou de receber movimentação e não pode mais ser apagado. Use Desativar.");
+    }
+    return falha(traduzirErroDoBanco(error, "Não foi possível apagar o local."));
+  }
+
+  return sucesso(null);
 }
 
 export async function alternarLocal(id: string): Promise<Resultado<Local>> {
