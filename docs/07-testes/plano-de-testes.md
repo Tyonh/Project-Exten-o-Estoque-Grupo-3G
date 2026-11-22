@@ -26,6 +26,7 @@ npm test
 | Família, categoria, marca e atributos lidos da descrição do catálogo legado | `backend/tests/regras.test.ts` |
 | Validação do documento enviado pelo GEDOC (protocolo, tipo, itens, quantidades) | `backend/tests/regras.test.ts` |
 | Regras da baixa: soma exata, item em dois locais, falta de saldo, retirada fora do documento | `backend/tests/regras.test.ts` |
+| Testes da AV3 de Teste de Software: valores-limite, fluxo de dados, modelo de referência (500 pedidos aleatórios) e os erros E-01 a E-11 do relatório | `backend/tests/av3-teste-de-software.test.ts` |
 | Montagem e envio do documento do GEDOC para o estoque | `gedoc/tests/documentos/estoque-sync.test.ts` (`npx vitest run tests/documentos`) |
 
 - [ ] Lint, typecheck e `npm test` sem erros no estoque
@@ -175,6 +176,7 @@ Duração sugerida: uma semana, com um turno e um gerente de estoque.
 | 3 | 29/10/2026 | Claude Code | Cenários da rota `POST /api/documentos` com o banco real: 401, 400, 422, 201, 200 e 409. Em produção, o orçamento `O-20261029-4KNW` foi validado no GEDOC e chegou ao estoque. |
 | 4 | 29/10/2026 | Claude Code | Roteiro automatizado de 25 cenários contra o banco real, com o código do backend e a checagem de sessão trocada por um admin fixo: entrada de saldo, baixa (um item em dois locais, parcial, repetida, simultânea, sem saldo, sem validação), inventário completo e apagar local. **Falta**: login e perfil por tela e os demais cenários de QR no celular (ver a tabela da fase 4). |
 | 4 (celular) | 29/10/2026 | equipe | **A leitura do QR code pela câmera funciona** com o sistema de estoque em produção. Não ficou registrado em quais aparelhos (Android ou iPhone) nem quais cenários da tabela foram repetidos. |
+| 0 (AV3) | 22/11/2026 | Geovane | `npm test` com 57 testes sem falhas; cobertura de ramos de 88,73 % para 92,28 %. Erros encontrados e soluções em [[av3-relatorio-teste-de-software]]. |
 | 5 | | | |
 
 ## Ligações
